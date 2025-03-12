@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:synchronized/synchronized.dart';
+import 'package:todo_list_provider/app/core/database/sqlite_migration_factory.dart';
 
 class SqliteConnectionFactory {
   static const String _DATABASE_NAME = 'todo_list_provider.db';
@@ -50,18 +51,21 @@ class SqliteConnectionFactory {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE todo (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        description TEXT NOT NULL,
-        done INTEGER NOT NULL
-      )
-    ''');
+    final Batch batch = db.batch();
+    final migrations = SqliteMigrationFactory().getCreateMigration();
+    for (var migration in migrations) {
+      migration.create(batch);
+    }
+    batch.commit();
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    await db.execute('DROP TABLE IF EXISTS todo');
-    await _onCreate(db, newVersion);
+    final Batch batch = db.batch();
+    final migrations = SqliteMigrationFactory().getUpgradeMigration(oldVersion);
+    for (var migration in migrations) {
+      migration.update(batch);
+    }
+    batch.commit();
   }
 
   Future<void> _onDowngrade(Database db, int oldVersion, int newVersion) async {

@@ -1,0 +1,32 @@
+import 'package:todo_list_provider/app/core/database/migrations/migration.dart';
+import 'package:todo_list_provider/app/core/database/migrations/migration_v1.dart';
+import 'package:todo_list_provider/app/core/database/migrations/migration_v2.dart';
+import 'package:todo_list_provider/app/core/database/migrations/migration_v3.dart';
+
+class SqliteMigrationFactory {
+  List<Migration> getCreateMigration() => [
+        MigrationV1(),
+        MigrationV2(),
+        MigrationV3(),
+      ];
+
+  List<Migration> getUpgradeMigration(int version) {
+    switch (version) {
+      case 1:
+        return [
+          MigrationV2(),
+          MigrationV3(),
+        ];
+      case 2:
+        return [
+          MigrationV3(),
+        ];
+      default:
+        return [
+          MigrationV1(),
+          MigrationV2(),
+          MigrationV3(),
+        ];
+    }
+  }
+}
