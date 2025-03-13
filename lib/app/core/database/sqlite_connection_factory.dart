@@ -28,16 +28,14 @@ class SqliteConnectionFactory {
 
     if (_database == null) {
       await _lock.synchronized(() async {
-        if (_database == null) {
-          _database = await openDatabase(
-            databasePathFinal,
-            version: _DATABASE_VERSION,
-            onConfigure: _onConfigure,
-            onCreate: _onCreate,
-            onUpgrade: _onUpgrade,
-            onDowngrade: _onDowngrade,
-          );
-        }
+        _database ??= await openDatabase(
+          databasePathFinal,
+          version: _DATABASE_VERSION,
+          onConfigure: _onConfigure,
+          onCreate: _onCreate,
+          onUpgrade: _onUpgrade,
+          onDowngrade: _onDowngrade,
+        );
       });
     }
     return _database!;
