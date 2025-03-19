@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/button_list.dart';
+import 'package:flutter_signin_button/button_view.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_list_provider/app/core/widget/todo_list_logo.dart';
 import 'package:todo_list_provider/app/modules/auth/login/login_controller.dart';
 
 class LoginPage extends StatelessWidget {
@@ -19,16 +22,79 @@ class LoginPage extends StatelessWidget {
             ),
             child: IntrinsicHeight(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    height: 50,
-                    color: Colors.red,
+                  const SizedBox(height: 10),
+                  const TodoListLogo(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                    child: Form(
+                        child: Column(
+                      children: [
+                        TextFormField(),
+                        const SizedBox(height: 20),
+                        TextFormField(),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () {},
+                              child: const Padding(
+                                padding: EdgeInsets.all(10.0),
+                                child: Text('Esqueceu a senha?'),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {},
+                              child: const Text(
+                                'Login',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )),
                   ),
+                  const SizedBox(height: 20),
                   Expanded(
                     child: Container(
-                      color: Colors.blue,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF0F3F7),
+                        border: Border(
+                          top: BorderSide(
+                            width: 2,
+                            color: Colors.grey.withAlpha(50),
+                          ),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 30),
+                          SignInButton(
+                            Buttons.Google,
+                            padding: const EdgeInsets.all(5),
+                            shape: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: BorderSide.none,
+                            ),
+                            onPressed: () {},
+                            text: 'Continue com o Google',
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Não tem uma conta?'),
+                              TextButton(
+                                onPressed: () {},
+                                child: const Text('Cadastre-se'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),

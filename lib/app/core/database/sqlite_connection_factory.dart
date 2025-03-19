@@ -1,10 +1,13 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+// ignore: depend_on_referenced_packages
 import 'package:synchronized/synchronized.dart';
 import 'package:todo_list_provider/app/core/database/sqlite_migration_factory.dart';
 
 class SqliteConnectionFactory {
+  // ignore: constant_identifier_names
   static const String _DATABASE_NAME = 'todo_list_provider.db';
+  // ignore: constant_identifier_names
   static const int _DATABASE_VERSION = 1;
 
   // Correção: Inicializando a instância corretamente
