@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 class TodoListField extends StatelessWidget {
@@ -10,15 +9,14 @@ class TodoListField extends StatelessWidget {
   final FormFieldValidator<String>? validator;
 
   TodoListField({
-    Key? key,
+    super.key,
     required this.label,
     this.obscureText = false,
     this.suffixIconButton,
     this.controller,
     this.validator,
-  })  : assert(obscureText == true ? suffixIconButton == null : true,
-            'If obscureText is true, suffixIconButton must be null'),
-        super(key: key);
+  }) : assert(obscureText == true ? suffixIconButton == null : true,
+            'If obscureText is true, suffixIconButton must be null');
 
   @override
   Widget build(BuildContext context) {

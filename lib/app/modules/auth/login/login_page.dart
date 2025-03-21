@@ -52,9 +52,17 @@ class LoginPage extends StatelessWidget {
                               ),
                             ),
                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
                               onPressed: () {},
-                              child: const Text(
-                                'Login',
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Login',
+                                ),
                               ),
                             ),
                           ],
@@ -87,13 +95,25 @@ class LoginPage extends StatelessWidget {
                             onPressed: () {},
                             text: 'Continue com o Google',
                           ),
+                          const SizedBox(height: 5),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Text('Não tem uma conta?'),
-                              TextButton(
-                                onPressed: () {},
-                                child: const Text('Cadastre-se'),
+                              const SizedBox(width: 5),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pushNamed('/register');
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Text('Cadastre-se'),
+                                ),
                               ),
                             ],
                           ),
