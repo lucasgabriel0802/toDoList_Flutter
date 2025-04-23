@@ -4,7 +4,7 @@ import 'package:todo_list_provider/app/exception/auth_exception.dart';
 import './user_repository.dart';
 
 class UserRepositoryImpl extends UserRepository {
-  FirebaseAuth _firebaseAuth;
+  final FirebaseAuth _firebaseAuth;
 
   UserRepositoryImpl({required FirebaseAuth firebaseAuth}) : _firebaseAuth = firebaseAuth;
 
@@ -14,9 +14,7 @@ class UserRepositoryImpl extends UserRepository {
       final userCredencial =
           await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
       return userCredencial.user;
-    } on FirebaseAuthException catch (e, s) {
-      print(e);
-      print(s);
+    } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         final loginType = await _firebaseAuth.fetchSignInMethodsForEmail(email);
         if (loginType.isNotEmpty && loginType[0] == 'password') {
