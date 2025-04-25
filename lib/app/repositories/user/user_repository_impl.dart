@@ -16,6 +16,7 @@ class UserRepositoryImpl extends UserRepository {
       return userCredencial.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
+        // ignore: deprecated_member_use
         final loginType = await _firebaseAuth.fetchSignInMethodsForEmail(email);
         if (loginType.isNotEmpty && loginType[0] == 'password') {
           return throw AuthException(message: 'E-mail already in use.');
