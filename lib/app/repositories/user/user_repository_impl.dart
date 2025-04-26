@@ -64,4 +64,32 @@ class UserRepositoryImpl extends UserRepository {
       }
     }
   }
+
+  @override
+  Future<User?> login(String email, String password) async {
+    _firebaseAuth
+        .signInWithEmailAndPassword(email: email, password: password)
+        .then((userCredential) {
+      return userCredential.user;
+    }).catchError((error) {
+      if (error is FirebaseAuthException) {
+        if (error.code == 'user-not-found') {
+          throw AuthException(message: 'User not found.');
+        } else if (error.code == 'wrong-password') {
+          throw AuthException(message: 'Wrong password.');
+        } else if (error.code == 'invalid-email') {
+          throw AuthException(message: 'Invalid email.');
+        } else if (error.code == 'user-disabled') {
+          throw AuthException(message: 'User disabled.');
+        } else if (error.code == 'too-many-requests') {
+          throw AuthException(message: 'Too many requests.');
+        } else {
+          throw AuthException(message: error.message ?? 'Unknown error.');
+        }
+      } else {
+        throw AuthException(message: error.toString());
+      }
+    });
+    return null;
+  }
 }
