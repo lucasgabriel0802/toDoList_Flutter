@@ -162,7 +162,10 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(30),
                               borderSide: BorderSide.none,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              final controller = context.read<LoginController>();
+                              controller.googleLogin();
+                            },
                             text: 'Continue com o Google',
                           ),
                           const SizedBox(height: 5),

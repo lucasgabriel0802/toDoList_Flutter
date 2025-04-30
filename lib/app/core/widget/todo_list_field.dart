@@ -11,7 +11,7 @@ class TodoListField extends StatelessWidget {
   final FocusNode? focusNode;
 
   TodoListField({
-    Key? key,
+    super.key,
     required this.label,
     this.obscureText = false,
     this.suffixIconButton,
