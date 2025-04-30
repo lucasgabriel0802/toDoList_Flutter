@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:todo_list_provider/app/exception/auth_exception.dart';
 
 import './user_repository.dart';
@@ -67,11 +68,12 @@ class UserRepositoryImpl extends UserRepository {
 
   @override
   Future<User?> login(String email, String password) async {
-    _firebaseAuth
-        .signInWithEmailAndPassword(email: email, password: password)
-        .then((userCredential) {
-      return userCredential.user;
-    }).catchError((error) {
+    try {
+      final userCredencial =
+          await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+
+      return userCredencial.user;
+    } catch (error) {
       if (error is FirebaseAuthException) {
         if (error.code == 'user-not-found') {
           throw AuthException(message: 'User not found.');
@@ -89,7 +91,44 @@ class UserRepositoryImpl extends UserRepository {
       } else {
         throw AuthException(message: error.toString());
       }
-    });
-    return null;
+    } finally {}
+  }
+
+  @override
+  Future<void> forgotPassword(String email) async {
+    try {
+      final loginMethods = await _firebaseAuth.fetchSignInMethodsForEmail(email);
+      if (loginMethods.isEmpty || loginMethods.contains('password')) {
+        await _firebaseAuth.sendPasswordResetEmail(email: email);
+      } else {
+        throw AuthException(message: 'You are registered with Google Account.');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw AuthException(message: 'User not found.');
+      } else if (e.code == 'invalid-email') {
+        throw AuthException(message: 'Invalid email.');
+      } else if (e.code == 'operation-not-allowed') {
+        throw AuthException(message: 'Operation not allowed.');
+      } else if (e.code == 'too-many-requests') {
+        throw AuthException(message: 'Too many requests.');
+      } else {
+        throw AuthException(message: e.message ?? 'Unknown error.');
+      }
+    } on PlatformException catch (e) {
+      if (e.code == 'ERROR_USER_NOT_FOUND') {
+        throw AuthException(message: 'User not found.');
+      } else if (e.code == 'ERROR_INVALID_EMAIL') {
+        throw AuthException(message: 'Invalid email.');
+      } else if (e.code == 'ERROR_OPERATION_NOT_ALLOWED') {
+        throw AuthException(message: 'Operation not allowed.');
+      } else if (e.code == 'ERROR_TOO_MANY_REQUESTS') {
+        throw AuthException(message: 'Too many requests.');
+      } else {
+        throw AuthException(message: e.message ?? 'Unknown error.');
+      }
+    } catch (error) {
+      throw AuthException(message: error.toString());
+    }
   }
 }

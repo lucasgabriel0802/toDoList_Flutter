@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 class TodoListField extends StatelessWidget {
@@ -7,14 +8,16 @@ class TodoListField extends StatelessWidget {
   final ValueNotifier<bool> obscureTextVN = ValueNotifier<bool>(false);
   final TextEditingController? controller;
   final FormFieldValidator<String>? validator;
+  final FocusNode? focusNode;
 
   TodoListField({
-    super.key,
+    Key? key,
     required this.label,
     this.obscureText = false,
     this.suffixIconButton,
     this.controller,
     this.validator,
+    this.focusNode,
   }) : assert(obscureText == true ? suffixIconButton == null : true,
             'If obscureText is true, suffixIconButton must be null');
 
@@ -25,6 +28,7 @@ class TodoListField extends StatelessWidget {
       builder: (_, obscureTextValue, child) {
         return TextFormField(
           controller: controller,
+          focusNode: focusNode,
           validator: validator,
           decoration: InputDecoration(
             labelText: label,

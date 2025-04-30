@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailEC = TextEditingController();
   final _passwordEC = TextEditingController();
+  final _emailFocus = FocusNode();
 
   @override
   void initState() {
@@ -27,13 +28,21 @@ class _LoginPageState extends State<LoginPage> {
     DefaultListenerNotifier(
       changeNotifier: context.read<LoginController>(),
     ).listener(
-        context: context,
-        onSuccessCallback: (changeNotifier, listenerNotifier) {
-          if (changeNotifier.isSuccess) {
-            listenerNotifier.disposeListener();
-            Messages.of(context).showSuccess('Login realizado com sucesso!');
+      context: context,
+      onEverCallback: (notifier, listenerNotifier) {
+        if (notifier is LoginController) {
+          if (notifier.hasInfo) {
+            Messages.of(context).showInfo(notifier.infoMessage ?? '');
           }
-        });
+        }
+      },
+      onSuccessCallback: (notifier, listenerNotifier) {
+        if (notifier.isSuccess) {
+          listenerNotifier.disposeListener();
+          Messages.of(context).showSuccess('Login realizado com sucesso!');
+        }
+      },
+    );
   }
 
   @override
@@ -68,6 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                             TodoListField(
                               label: 'E-mail',
                               controller: _emailEC,
+                              focusNode: _emailFocus,
                               validator: Validatorless.multiple([
                                 Validatorless.required('E-mail obrigatório'),
                                 Validatorless.email('E-mail inválido'),
@@ -86,7 +96,16 @@ class _LoginPageState extends State<LoginPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    if (_emailEC.text.isEmpty) {
+                                      Messages.of(context)
+                                          .showError('Informe o e-mail cadastrado!');
+                                      _emailFocus.requestFocus();
+                                    } else {
+                                      context.read<LoginController>().forgotPassword(_emailEC.text);
+                                      FocusScope.of(context).unfocus();
+                                    }
+                                  },
                                   child: const Padding(
                                     padding: EdgeInsets.all(10.0),
                                     child: Text('Esqueceu a senha?'),
@@ -106,6 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                                       final String password = _passwordEC.text;
 
                                       controller.login(email, password);
+                                      FocusScope.of(context).unfocus();
                                     }
                                   },
                                   child: const Padding(
