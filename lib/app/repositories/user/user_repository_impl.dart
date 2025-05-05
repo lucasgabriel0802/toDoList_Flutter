@@ -136,41 +136,46 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<User?> googleLogin() async {
     final googleSignIn = GoogleSignIn();
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) {
-      throw AuthException(message: 'Google sign-in aborted.');
-    } else {
-      // ignore: deprecated_member_use
-      final loginMethods = await _firebaseAuth.fetchSignInMethodsForEmail(googleUser.email);
-      if (loginMethods.isEmpty || loginMethods.contains('password')) {
-        final googleAuth = await googleUser.authentication;
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-        try {
-          final userCredential = await _firebaseAuth.signInWithCredential(credential);
-          return userCredential.user;
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'user-not-found') {
-            throw AuthException(message: 'User not found.');
-          } else if (e.code == 'wrong-password') {
-            throw AuthException(message: 'Wrong password.');
-          } else if (e.code == 'invalid-email') {
-            throw AuthException(message: 'Invalid email.');
-          } else if (e.code == 'user-disabled') {
-            throw AuthException(message: 'User disabled.');
-          } else if (e.code == 'too-many-requests') {
-            throw AuthException(message: 'Too many requests.');
-          } else {
-            throw AuthException(message: e.message ?? 'Unknown error.');
-          }
-        } finally {}
-      } else if (loginMethods.contains('google.com')) {
-        throw AuthException(message: 'You are already registered with Google Account.');
+    try {
+      final googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        throw AuthException(message: 'Google sign-in aborted.');
       } else {
-        throw AuthException(message: 'You are registered with E-mail. Please login with E-mail.');
+        // ignore: deprecated_member_use
+        final loginMethods = await _firebaseAuth.fetchSignInMethodsForEmail(googleUser.email);
+        if (loginMethods.isEmpty || loginMethods.contains('password')) {
+          final googleAuth = await googleUser.authentication;
+          final credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+          try {
+            final userCredential = await _firebaseAuth.signInWithCredential(credential);
+            return userCredential.user;
+          } on FirebaseAuthException catch (e) {
+            if (e.code == 'user-not-found') {
+              throw AuthException(message: 'User not found.');
+            } else if (e.code == 'wrong-password') {
+              throw AuthException(message: 'Wrong password.');
+            } else if (e.code == 'invalid-email') {
+              throw AuthException(message: 'Invalid email.');
+            } else if (e.code == 'user-disabled') {
+              throw AuthException(message: 'User disabled.');
+            } else if (e.code == 'too-many-requests') {
+              throw AuthException(message: 'Too many requests.');
+            } else {
+              throw AuthException(message: e.message ?? 'Unknown error.');
+            }
+          } finally {}
+        } else if (loginMethods.contains('google.com')) {
+          throw AuthException(message: 'You are already registered with Google Account.');
+        } else {
+          throw AuthException(message: 'You are registered with E-mail. Please login with E-mail.');
+        }
       }
+    } on Exception catch (e) {
+      print(e);
     }
   }
 
@@ -178,5 +183,21 @@ class UserRepositoryImpl extends UserRepository {
   Future<void> logout() async {
     await GoogleSignIn().signOut();
     await _firebaseAuth.signOut();
+  }
+
+  @override
+  Future<void> updateDisplayName(String name) async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      await user.updateProfile(displayName: name);
+      await user.reload();
+    } else {
+      throw AuthException(message: 'User not found.');
+    }
+  }
+
+  @override
+  String? getDisplayName() {
+    return _firebaseAuth.currentUser?.displayName;
   }
 }
